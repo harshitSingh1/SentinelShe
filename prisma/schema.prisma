@@ -1,0 +1,376 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  name        String?
+  phone       String?
+  city        String?
+  country     String?
+  isAnonymous Boolean  @default(false)
+  safetyScore Int      @default(0)
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations - Add all missing ones here
+  reports        Report[]
+  stories        Story[]
+  comments       Comment[]
+  courseProgress CourseProgress[]
+  buddies        BuddyRelation[]  @relation("user_buddies")
+  buddyOf        BuddyRelation[]  @relation("buddy_of")
+  savedStories   SavedStory[]
+  deviceTokens   DeviceToken[]
+  lessonProgress LessonProgress[]
+  quizAttempts   QuizAttempt[]
+  gadgetReviews  GadgetReview[]
+  reportFlags    ReportFlag[]
+  storyFlags     StoryFlag[]
+}
+
+model DeviceToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  platform  String // ios, android, web
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model BuddyRelation {
+  id        String      @id @default(cuid())
+  userId    String
+  buddyId   String
+  status    BuddyStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  user  User @relation("user_buddies", fields: [userId], references: [id], onDelete: Cascade)
+  buddy User @relation("buddy_of", fields: [buddyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, buddyId])
+}
+
+model Report {
+  id           String         @id @default(cuid())
+  userId       String
+  title        String
+  description  String         @db.Text
+  latitude     Float
+  longitude    Float
+  location     String?
+  category     ReportCategory
+  incidentDate DateTime
+  isAnonymous  Boolean        @default(false)
+  isVerified   Boolean        @default(false)
+  status       ReportStatus   @default(PENDING)
+  mediaUrls    String[] // Array of image URLs
+  upvotes      Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments Comment[]
+  flags    ReportFlag[]
+}
+
+model Story {
+  id          String        @id @default(cuid())
+  userId      String
+  title       String
+  content     String        @db.Text
+  category    StoryCategory
+  isAnonymous Boolean       @default(false)
+  isVerified  Boolean       @default(false)
+  status      StoryStatus   @default(PENDING)
+  mediaUrls   String[]
+  tags        String[]
+  upvotes     Int           @default(0)
+  views       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments Comment[]
+  savedBy  SavedStory[]
+  flags    StoryFlag[]
+}
+
+model SavedStory {
+  id        String   @id @default(cuid())
+  userId    String
+  storyId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storyId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  userId    String
+  storyId   String?
+  reportId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story  Story?  @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  report Report? @relation(fields: [reportId], references: [id], onDelete: Cascade)
+}
+
+model Course {
+  id          String           @id @default(cuid())
+  title       String
+  description String           @db.Text
+  category    CourseCategory
+  level       CourseLevel      @default(BEGINNER)
+  thumbnail   String
+  duration    Int // in minutes
+  lessons     Lesson[]
+  quizzes     Quiz[]
+  enrolledBy  CourseProgress[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  courseId    String
+  title       String
+  description String   @db.Text
+  videoUrl    String?
+  content     String   @db.Text
+  order       Int
+  duration    Int // in minutes
+  isFree      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course   Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress LessonProgress[]
+}
+
+model Quiz {
+  id           String        @id @default(cuid())
+  courseId     String
+  title        String
+  description  String?       @db.Text
+  passingScore Int           @default(70)
+  questions    Question[]
+  attempts     QuizAttempt[]
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model Question {
+  id            String   @id @default(cuid())
+  quizId        String
+  text          String   @db.Text
+  options       String[] // JSON array of options
+  correctOption Int
+  explanation   String?  @db.Text
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model CourseProgress {
+  id               String           @id @default(cuid())
+  userId           String
+  courseId         String
+  progress         Int              @default(0) // percentage
+  completed        Boolean          @default(false)
+  lastAccessed     DateTime         @default(now())
+  completedLessons LessonProgress[]
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+model LessonProgress {
+  id               String    @id @default(cuid())
+  userId           String
+  lessonId         String
+  courseProgressId String
+  completed        Boolean   @default(false)
+  watchedAt        DateTime?
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson         Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  courseProgress CourseProgress @relation(fields: [courseProgressId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  quizId    String
+  score     Int
+  passed    Boolean
+  answers   Json // Store answers as JSON
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model Gadget {
+  id            String         @id @default(cuid())
+  name          String
+  category      GadgetCategory
+  description   String         @db.Text
+  price         Float?
+  currency      String?        @default("USD")
+  imageUrls     String[]
+  videoUrl      String?
+  brand         String?
+  legality      LegalityStatus @default(UNKNOWN)
+  countries     Json? // Store country-specific legality
+  affiliateUrl  String?
+  averageRating Float          @default(0)
+  totalReviews  Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  reviews GadgetReview[]
+}
+
+model GadgetReview {
+  id         String   @id @default(cuid())
+  userId     String
+  gadgetId   String
+  rating     Int      @default(5) // 1-5
+  comment    String?  @db.Text
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gadget Gadget @relation(fields: [gadgetId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, gadgetId])
+}
+
+model ReportFlag {
+  id        String     @id @default(cuid())
+  reportId  String
+  userId    String
+  reason    FlagReason
+  createdAt DateTime   @default(now())
+
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([reportId, userId])
+}
+
+model StoryFlag {
+  id        String     @id @default(cuid())
+  storyId   String
+  userId    String
+  reason    FlagReason
+  createdAt DateTime   @default(now())
+
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, userId])
+}
+
+// Enums
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+  EXPERT
+}
+
+enum BuddyStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+enum ReportCategory {
+  SUSPICIOUS_ACTIVITY
+  HARASSMENT
+  UNSAFE_CONDITION
+  ASSAULT
+  STALKING
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  VERIFIED
+  DISMISSED
+}
+
+enum StoryCategory {
+  PERSONAL_EXPERIENCE
+  SAFETY_TIP
+  AWARENESS
+  SUCCESS_STORY
+  QUESTION
+}
+
+enum StoryStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum CourseCategory {
+  SELF_DEFENSE
+  LEGAL_RIGHTS
+  PSYCHOLOGY
+  DIGITAL_SAFETY
+  FIRST_AID
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum GadgetCategory {
+  ALARM
+  SPRAY
+  TRACKER
+  PROTECTION
+  LIGHT
+  OTHER
+}
+
+enum LegalityStatus {
+  LEGAL
+  RESTRICTED
+  ILLEGAL
+  UNKNOWN
+}
+
+enum FlagReason {
+  INAPPROPRIATE
+  FALSE_INFORMATION
+  SPAM
+  HARASSMENT
+  OTHER
+}

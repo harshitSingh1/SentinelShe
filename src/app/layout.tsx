@@ -4,6 +4,7 @@ import './globals.css'
 import { Providers } from '@/components/providers/Providers'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { CookieConsent } from '@/components/cookies/CookieConsent'
 import { Toaster } from 'react-hot-toast'
 import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants'
 
@@ -48,6 +49,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
+          <CookieConsent />
           <Toaster 
             position="top-right"
             toastOptions={{

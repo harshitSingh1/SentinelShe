@@ -8,7 +8,6 @@ import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { REPORT_CATEGORIES } from '@/lib/constants'
 
-// Define the schema with all fields properly typed
 const reportSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(100, 'Title too long'),
   description: z.string().min(20, 'Please provide more details').max(2000, 'Description too long'),
@@ -20,7 +19,6 @@ const reportSchema = z.object({
   isAnonymous: z.boolean(),
 })
 
-// Infer the type from the schema
 type ReportFormData = z.infer<typeof reportSchema>
 
 export function ReportForm() {

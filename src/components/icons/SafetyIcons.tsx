@@ -112,4 +112,66 @@ export const Icons = {
       <path d="M12 2V15" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
+    SuspiciousActivity: ({ className = "w-5 h-5", color = "currentColor" }: IconProps) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 8v5M12 16h.01" strokeLinecap="round"/>
+    </svg>
+  ),
+  
+  Harassment: ({ className = "w-5 h-5", color = "currentColor" }: IconProps) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8 9h.01M16 9h.01" strokeLinecap="round"/>
+    <path d="M8 15c.5-1 1.5-1.5 2.5-1.5h3c1 0 2 .5 2.5 1.5" strokeLinecap="round"/>
+  </svg>
+),
+  
+  UnsafeCondition: ({ className = "w-5 h-5", color = "currentColor" }: IconProps) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  
+  Assault: ({ className = "w-5 h-5", color = "currentColor" }: IconProps) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 22V12" strokeLinecap="round"/>
+    </svg>
+  ),
+  
+  Stalking: ({ className = "w-5 h-5", color = "currentColor" }: IconProps) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="12" cy="12" r="3" strokeLinecap="round"/>
+    </svg>
+  ),
+  
+  Other: ({ className = "w-5 h-5", color = "currentColor" }: IconProps) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 8v4M12 16h.01" strokeLinecap="round"/>
+    </svg>
+  ),
+
+  // Voting icons
+  Upvote: ({ className = "w-5 h-5", color = "currentColor" }: IconProps) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M12 19V5M5 12l7-7 7 7" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  
+  Downvote: ({ className = "w-5 h-5", color = "currentColor" }: IconProps) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M12 5v14M5 12l7 7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+
+  // Location filter icon
+  Location: ({ className = "w-5 h-5", color = "currentColor" }: IconProps) => (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M12 22c-2 0-8-5.5-8-10c0-4.5 3.5-8 8-8s8 3.5 8 8c0 4.5-6 10-8 10z" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="12" cy="12" r="3" strokeLinecap="round"/>
+    </svg>
+  ),
 }

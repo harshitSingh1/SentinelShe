@@ -72,7 +72,7 @@ export default function WatchtowerPage() {
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           <Link
-            href="/watchtower/report"
+            href="/watchtower/reports"
             className="bg-white rounded-lg shadow-md p-8 text-center hover:shadow-lg transition group"
           >
             <div className="text-5xl mb-4">📢</div>
@@ -141,11 +141,11 @@ export default function WatchtowerPage() {
               ))}
             </div>
             <Link 
-              href="/watchtower/map"
-              className="inline-block mt-4 text-accent-gold hover:underline"
-            >
-              View all reports →
-            </Link>
+  href="/watchtower/reports" 
+  className="inline-block mt-4 text-accent-gold hover:underline"
+>
+  View all reports →
+</Link>
           </div>
 
           {/* Recent Stories */}

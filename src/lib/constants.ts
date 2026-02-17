@@ -1,3 +1,51 @@
+import { Icons } from '@/components/icons/SafetyIcons'
+import { ComponentType } from 'react'
+
+export const STORY_CATEGORIES = [
+  { 
+    value: 'PERSONAL_EXPERIENCE', 
+    label: 'Personal Experience', 
+    icon: Icons.PersonalExperience,
+    color: '#4A90E2'
+  },
+  { 
+    value: 'SAFETY_TIP', 
+    label: 'Safety Tip', 
+    icon: Icons.SafetyTip,
+    color: '#2E7D5E'
+  },
+  { 
+    value: 'AWARENESS', 
+    label: 'Awareness', 
+    icon: Icons.Awareness,
+    color: '#C6A43F'
+  },
+  { 
+    value: 'SUCCESS_STORY', 
+    label: 'Success Story', 
+    icon: Icons.SuccessStory,
+    color: '#FF6B6B'
+  },
+  { 
+    value: 'QUESTION', 
+    label: 'Question', 
+    icon: Icons.Question,
+    color: '#6B4E71'
+  },
+] as const
+
+export type StoryCategory = typeof STORY_CATEGORIES[number]
+
+// Update tip categories
+export const tipCategories = [
+  { value: 'all', label: 'All Tips', icon: Icons.AllStories },
+  { value: 'AWARENESS', label: 'Awareness', icon: Icons.Awareness },
+  { value: 'INTUITION', label: 'Trust Your Gut', icon: Icons.Intuition },
+  { value: 'CONFIDENCE', label: 'Confidence', icon: Icons.Confidence },
+  { value: 'PREVENTION', label: 'Prevention', icon: Icons.Prevention },
+  { value: 'DE_ESCALATION', label: 'De-escalation', icon: Icons.DeEscalation },
+]
+
 // App Constants
 export const APP_NAME = 'SentinelShe'
 export const APP_DESCRIPTION = 'Knowledge is Your Shield. Community is Your Strength.'
@@ -43,14 +91,6 @@ export const REPORT_CATEGORIES = [
   { value: 'OTHER', label: '📌 Other', color: '#808080' }
 ] as const
 
-// Story Categories
-export const STORY_CATEGORIES = [
-  { value: 'PERSONAL_EXPERIENCE', label: '📝 Personal Experience', icon: '📝' },
-  { value: 'SAFETY_TIP', label: '💡 Safety Tip', icon: '💡' },
-  { value: 'AWARENESS', label: '🔔 Awareness', icon: '🔔' },
-  { value: 'SUCCESS_STORY', label: '✨ Success Story', icon: '✨' },
-  { value: 'QUESTION', label: '❓ Question', icon: '❓' }
-] as const
 
 // Gadget Categories
 export const GADGET_CATEGORIES = [

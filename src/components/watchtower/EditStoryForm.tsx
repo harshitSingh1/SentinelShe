@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,11 +8,11 @@ import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { STORY_CATEGORIES } from '@/lib/constants'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 
-// Make isAnonymous required in the schema
 const storySchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(100, 'Title too long'),
-  content: z.string().min(50, 'Please share more details (minimum 50 characters)').max(5000, 'Story too long'),
+  content: z.string().min(50, 'Please share more details').max(5000, 'Story too long'),
   category: z.enum(['PERSONAL_EXPERIENCE', 'SAFETY_TIP', 'AWARENESS', 'SUCCESS_STORY', 'QUESTION']),
   isAnonymous: z.boolean(),
   tags: z.string().optional(),
@@ -22,11 +22,17 @@ type StoryFormData = z.infer<typeof storySchema>
 
 const STORIES_STORAGE_KEY = 'community-stories'
 
-export function StoryForm() {
+interface EditStoryFormProps {
+  storyId: string
+}
+
+export function EditStoryForm({ storyId }: EditStoryFormProps) {
   const router = useRouter()
   const { data: session } = useSession()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [tags, setTags] = useState<string[]>([])
+  const [story, setStory] = useState<any>(null)
 
   const {
     register,
@@ -44,6 +50,26 @@ export function StoryForm() {
       tags: '',
     },
   })
+
+  useEffect(() => {
+    // Load story from localStorage
+    const stories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
+    const foundStory = stories.find((s: any) => s.id === storyId)
+    
+    if (foundStory) {
+      setStory(foundStory)
+      setTags(foundStory.tags || [])
+      
+      // Set form values
+      setValue('title', foundStory.title)
+      setValue('content', foundStory.content)
+      setValue('category', foundStory.category)
+      setValue('isAnonymous', foundStory.author.isAnonymous)
+      setValue('tags', foundStory.tags?.join(',') || '')
+    }
+    
+    setIsLoading(false)
+  }, [storyId, setValue])
 
   const isAnonymous = watch('isAnonymous')
 
@@ -70,46 +96,82 @@ export function StoryForm() {
 
   const onSubmit = async (data: StoryFormData) => {
     if (!session) {
-      toast.error('Please login to share a story')
+      toast.error('Please login to edit')
       return
     }
 
-    setIsLoading(true)
+    if (!story) {
+      toast.error('Story not found')
+      return
+    }
+
+    if (session.user?.email !== story.author.id) {
+      toast.error('You can only edit your own stories')
+      return
+    }
+
+    setIsSubmitting(true)
 
     try {
-      const newStory = {
-        id: Date.now().toString(),
+      const updatedStory = {
+        ...story,
         title: data.title,
         content: data.content,
         category: data.category,
         author: {
-          name: data.isAnonymous ? null : session.user?.name || 'User',
+          ...story.author,
           isAnonymous: data.isAnonymous,
-          id: session.user?.email,
         },
-        upvotes: 0,
-        comments: 0,
-        createdAt: new Date().toISOString(),
         tags: tags,
-        views: 0,
-        savedBy: 0,
       }
 
-      const existingStories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
-      const updatedStories = [newStory, ...existingStories]
+      const stories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
+      const updatedStories = stories.map((s: any) => 
+        s.id === storyId ? updatedStory : s
+      )
       localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(updatedStories))
 
-      toast.success('Story shared successfully!')
-      router.push('/watchtower/feed')
+      toast.success('Story updated successfully!')
+      router.push(`/watchtower/story/${storyId}`)
     } catch (error) {
-      toast.error('Failed to share story')
+      toast.error('Failed to update story')
     } finally {
-      setIsLoading(false)
+      setIsSubmitting(false)
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-neutral-light py-12">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="bg-white rounded-lg shadow-lg p-8 animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+            <div className="h-32 bg-gray-200 rounded mb-4"></div>
+            <div className="h-32 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!story) {
+    return (
+      <div className="min-h-screen bg-neutral-light py-12">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <h1 className="text-3xl font-bold text-primary-deep mb-4">Story Not Found</h1>
+          <p className="text-gray-600 mb-8">The story you're trying to edit doesn't exist or has been deleted.</p>
+          <Link href="/watchtower/feed" className="btn-primary">
+            Back to Stories
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold text-primary-deep mb-8">Edit Story</h1>
+
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
           Story Title
@@ -119,12 +181,9 @@ export function StoryForm() {
           type="text"
           id="title"
           className="input-field"
-          placeholder="e.g., How I stayed safe during a late-night commute"
-          disabled={isLoading}
+          disabled={isSubmitting}
         />
-        {errors.title && (
-          <p className="mt-1 text-sm text-alert-coral">{errors.title.message}</p>
-        )}
+        {errors.title && <p className="mt-1 text-sm text-alert-coral">{errors.title.message}</p>}
       </div>
 
       <div>
@@ -135,7 +194,7 @@ export function StoryForm() {
           {...register('category')}
           id="category"
           className="input-field"
-          disabled={isLoading}
+          disabled={isSubmitting}
         >
           {STORY_CATEGORIES.map((category) => (
             <option key={category.value} value={category.value}>
@@ -143,9 +202,7 @@ export function StoryForm() {
             </option>
           ))}
         </select>
-        {errors.category && (
-          <p className="mt-1 text-sm text-alert-coral">{errors.category.message}</p>
-        )}
+        {errors.category && <p className="mt-1 text-sm text-alert-coral">{errors.category.message}</p>}
       </div>
 
       <div>
@@ -157,12 +214,9 @@ export function StoryForm() {
           id="content"
           rows={8}
           className="input-field"
-          placeholder="Share your experience, what you learned, and any advice for others..."
-          disabled={isLoading}
+          disabled={isSubmitting}
         />
-        {errors.content && (
-          <p className="mt-1 text-sm text-alert-coral">{errors.content.message}</p>
-        )}
+        {errors.content && <p className="mt-1 text-sm text-alert-coral">{errors.content.message}</p>}
       </div>
 
       <div>
@@ -190,7 +244,7 @@ export function StoryForm() {
             className="flex-1 min-w-30 bg-transparent border-none focus:outline-none text-sm"
             placeholder={tags.length < 5 ? "Add tags..." : "Max tags reached"}
             onKeyDown={handleTagKeyDown}
-            disabled={isLoading || tags.length >= 5}
+            disabled={isSubmitting || tags.length >= 5}
           />
         </div>
       </div>
@@ -217,10 +271,10 @@ export function StoryForm() {
         </button>
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isSubmitting}
           className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? 'Sharing...' : 'Share Story'}
+          {isSubmitting ? 'Updating...' : 'Update Story'}
         </button>
       </div>
     </form>

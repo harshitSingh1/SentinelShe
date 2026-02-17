@@ -374,3 +374,66 @@ enum FlagReason {
   HARASSMENT
   OTHER
 }
+
+// Add these models to your existing schema
+
+model QuickTip {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  category    TipCategory
+  icon        String
+  readTime    Int
+  forSituation String?
+  isFeatured  Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Scenario {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  situation   String
+  imageUrl    String?
+  quickActions String[]
+  tipIds      String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProtectiveMove {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  gifUrl      String?
+  steps       String[]
+  difficulty  String   @default("beginner")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SafetyChecklist {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  items       String[]
+  category    String
+  icon        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum TipCategory {
+  AWARENESS
+  INTUITION
+  CONFIDENCE
+  PREVENTION
+  DE_ESCALATION
+  PHYSICAL
+  DIGITAL
+  TRAVEL
+  HOME
+  WORK
+}

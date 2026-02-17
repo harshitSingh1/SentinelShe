@@ -1,156 +1,96 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { COURSE_CATEGORIES, COURSE_LEVELS } from '@/lib/constants'
+import { QuickTips } from '@/components/academy/QuickTips'
+import { ScenariosGrid } from '@/components/academy/ScenariosGrid'
+import { ProtectiveMoves } from '@/components/academy/ProtectiveMoves'
+import { SafetyChecklists } from '@/components/academy/SafetyChecklists'
 
 export const metadata: Metadata = {
-  title: 'Safety Academy',
-  description: 'Learn self-defense, legal rights, and safety awareness',
+  title: 'Safety Awareness Hub',
+  description: 'Quick, practical safety awareness tips and protective techniques',
 }
-
-// Mock data - replace with database calls
-const courses = [
-  {
-    id: '1',
-    title: 'Basic Self-Defense for Beginners',
-    description: 'Learn fundamental self-defense techniques and awareness skills',
-    category: 'SELF_DEFENSE',
-    level: 'BEGINNER',
-    duration: 120,
-    lessons: 8,
-    thumbnail: '/images/courses/self-defense-basics.jpg',
-    progress: 0,
-  },
-  {
-    id: '2',
-    title: 'Understanding Your Legal Rights',
-    description: 'Know your rights and how to navigate the legal system',
-    category: 'LEGAL_RIGHTS',
-    level: 'BEGINNER',
-    duration: 90,
-    lessons: 6,
-    thumbnail: '/images/courses/legal-rights.jpg',
-    progress: 0,
-  },
-  {
-    id: '3',
-    title: 'Advanced Situational Awareness',
-    description: 'Develop heightened awareness and threat detection skills',
-    category: 'PSYCHOLOGY',
-    level: 'INTERMEDIATE',
-    duration: 150,
-    lessons: 10,
-    thumbnail: '/images/courses/awareness.jpg',
-    progress: 0,
-  },
-  {
-    id: '4',
-    title: 'Digital Safety & Privacy',
-    description: 'Protect yourself online and secure your digital presence',
-    category: 'DIGITAL_SAFETY',
-    level: 'BEGINNER',
-    duration: 60,
-    lessons: 5,
-    thumbnail: '/images/courses/digital-safety.jpg',
-    progress: 0,
-  },
-  {
-    id: '5',
-    title: 'Basic First Aid & Emergency Response',
-    description: 'Essential first aid skills for emergency situations',
-    category: 'FIRST_AID',
-    level: 'BEGINNER',
-    duration: 180,
-    lessons: 12,
-    thumbnail: '/images/courses/first-aid.jpg',
-    progress: 0,
-  },
-]
 
 export default function AcademyPage() {
   return (
-    <div className="min-h-screen bg-neutral-light py-12">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-primary-deep mb-4">
-            Safety Academy
+    <div className="min-h-screen bg-neutral-light">
+      {/* Hero Section */}
+      <section className="bg-linear-to-r from-primary-deep to-primary-mid text-white py-16 md:py-20">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Your Safety <span className="text-accent-gold">Instincts</span>
           </h1>
-          <p className="text-gray-600 max-w-2xl">
-            Empowering women through knowledge. Explore our courses designed to build your confidence and safety awareness.
+          <p className="text-lg md:text-xl max-w-2xl mb-8">
+            Quick, practical awareness tips that become second nature. 
+            No long courses - just real-world protection that fits your life.
           </p>
-        </div>
-
-        {/* Categories */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-primary-deep mb-6">Browse by Category</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {COURSE_CATEGORIES.map((category) => (
-              <button
-                key={category.value}
-                className="bg-white rounded-lg p-4 text-center hover:shadow-md transition"
-              >
-                <div className="text-3xl mb-2">{category.icon}</div>
-                <span className="text-sm font-medium">{category.label}</span>
-              </button>
-            ))}
+          <div className="flex flex-wrap gap-4">
+            <Link href="#quick-tips" className="bg-accent-gold text-primary-deep px-6 py-3 rounded-lg font-semibold hover:bg-accent-gold/90 transition">
+              Start Learning
+            </Link>
+            <Link href="#checklists" className="border-2 border-white hover:bg-white hover:text-primary-deep px-6 py-3 rounded-lg transition">
+              Safety Checklists
+            </Link>
           </div>
         </div>
+      </section>
 
-        {/* Course Grid */}
-        <div>
-          <h2 className="text-2xl font-bold text-primary-deep mb-6">Featured Courses</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => {
-              const category = COURSE_CATEGORIES.find(c => c.value === course.category)
-              const level = COURSE_LEVELS.find(l => l.value === course.level)
-              
-              return (
-                <Link
-                  key={course.id}
-                  href={`/academy/${course.id}`}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
-                >
-                  <div className="h-48 bg-primary-mid/20 flex items-center justify-center">
-                    <span className="text-6xl">{category?.icon}</span>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-medium text-accent-gold">
-                        {category?.label}
-                      </span>
-                      <span 
-                        className="text-xs px-2 py-1 rounded-full"
-                        style={{ backgroundColor: level?.color + '20', color: level?.color }}
-                      >
-                        {level?.label}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">{course.title}</h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {course.description}
-                    </p>
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <span>{course.duration} min</span>
-                      <span>{course.lessons} lessons</span>
-                    </div>
-                    {course.progress > 0 && (
-                      <div className="mt-4">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-accent-gold rounded-full h-2" 
-                            style={{ width: `${course.progress}%` }}
-                          />
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">{course.progress}% complete</p>
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              )
-            })}
+      {/* Quick Tips Section */}
+      <section id="quick-tips" className="py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-primary-deep mb-3">⚡ Quick Awareness Tips</h2>
+          <p className="text-gray-600 mb-8 max-w-2xl">
+            Simple habits that take seconds to learn, a lifetime to benefit from.
+          </p>
+          <QuickTips />
+        </div>
+      </section>
+
+      {/* Real Scenarios Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-primary-deep mb-3">🗺️ Real Situations</h2>
+          <p className="text-gray-600 mb-8 max-w-2xl">
+            Quick thinking for common scenarios. Know what to do before it happens.
+          </p>
+          <ScenariosGrid />
+        </div>
+      </section>
+
+      {/* Simple Protective Moves */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-primary-deep mb-3">🛡️ Simple Protective Moves</h2>
+          <p className="text-gray-600 mb-8 max-w-2xl">
+            Easy-to-remember techniques that can create distance and help you escape.
+          </p>
+          <ProtectiveMoves />
+        </div>
+      </section>
+
+      {/* Quick Checklists */}
+      <section id="checklists" className="py-16 bg-primary-deep/5">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-primary-deep mb-3">✅ Safety Checklists</h2>
+          <p className="text-gray-600 mb-8 max-w-2xl">
+            Quick reminders for different situations. Check and go.
+          </p>
+          <SafetyChecklists />
+        </div>
+      </section>
+
+      {/* Daily Reminder */}
+      <section className="py-12 text-center">
+        <div className="container mx-auto px-4">
+          <div className="bg-accent-gold/10 rounded-lg p-8 max-w-3xl mx-auto">
+            <p className="text-xl text-primary-deep mb-4">
+              "Awareness isn't about being scared - it's about being prepared."
+            </p>
+            <p className="text-gray-600">
+              Check in daily. One tip at a time builds lasting protection.
+            </p>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

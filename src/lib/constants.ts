@@ -36,6 +36,47 @@ export const STORY_CATEGORIES = [
 
 export type StoryCategory = typeof STORY_CATEGORIES[number]
 
+
+// Update REPORT_CATEGORIES to use icons
+export const REPORT_CATEGORIES = [
+  { 
+    value: 'SUSPICIOUS_ACTIVITY', 
+    label: 'Suspicious Activity', 
+    icon: Icons.SuspiciousActivity,
+    color: '#FFA500' 
+  },
+  { 
+    value: 'HARASSMENT', 
+    label: 'Harassment', 
+    icon: Icons.Harassment,
+    color: '#FF6B6B' 
+  },
+  { 
+    value: 'UNSAFE_CONDITION', 
+    label: 'Unsafe Condition', 
+    icon: Icons.UnsafeCondition,
+    color: '#4A90E2' 
+  },
+  { 
+    value: 'ASSAULT', 
+    label: 'Assault', 
+    icon: Icons.Assault,
+    color: '#DC143C' 
+  },
+  { 
+    value: 'STALKING', 
+    label: 'Stalking', 
+    icon: Icons.Stalking,
+    color: '#9370DB' 
+  },
+  { 
+    value: 'OTHER', 
+    label: 'Other', 
+    icon: Icons.Other,
+    color: '#808080' 
+  },
+] as const
+
 // Update tip categories
 export const tipCategories = [
   { value: 'all', label: 'All Tips', icon: Icons.AllStories },
@@ -81,15 +122,6 @@ export const CACHE_TIMES = {
   COURSES: 86400 // 24 hours
 } as const
 
-// Report Categories with descriptions
-export const REPORT_CATEGORIES = [
-  { value: 'SUSPICIOUS_ACTIVITY', label: '🚨 Suspicious Activity', color: '#FFA500' },
-  { value: 'HARASSMENT', label: '⚠️ Harassment', color: '#FF6B6B' },
-  { value: 'UNSAFE_CONDITION', label: '🌙 Unsafe Condition', color: '#4A90E2' },
-  { value: 'ASSAULT', label: '🔴 Assault', color: '#DC143C' },
-  { value: 'STALKING', label: '👁️ Stalking', color: '#9370DB' },
-  { value: 'OTHER', label: '📌 Other', color: '#808080' }
-] as const
 
 
 // Gadget Categories

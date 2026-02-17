@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer'
 import { CookieConsent } from '@/components/cookies/CookieConsent'
 import { Toaster } from 'react-hot-toast'
 import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants'
+import { UserSync } from '@/components/auth/UserSync'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -44,6 +45,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <Providers>
+          <UserSync />
           <div className="flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">{children}</main>

@@ -96,7 +96,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Pull the pin and it emits a deafening 130dB alarm that can be heard from 600 feet away. Also works as a door stopper alarm for hotel rooms. Comes with a bright LED flashlight and keychain attachment.',
     price: '₹499',
     priceRange: 'Under ₹500',
-    imageUrl: 'https://m.media-amazon.com/images/I/61iYP1v7M3L._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/31L3kbwt6fL._SX679_.jpg',
     rating: 4.5,
     reviews: 2345,
     features: [
@@ -120,14 +120,14 @@ export const armoryProducts: GadgetProduct[] = [
   },
   {
     id: 'alarm-birdie-1',
-    name: 'Birdie Personal Safety Alarm',
+    name: 'Taiker Personal Safety Alarm',
     category: 'alarm',
-    brand: 'Birdie',
+    brand: 'Taiker',
     description: 'Compact 130dB alarm with pull-pin activation',
     longDescription: 'Simple pull-pin activation. When activated, it produces a 130dB sound that can be heard from far away. Comes in multiple colors and includes a carabiner clip.',
     price: '₹699',
     priceRange: '₹500-₹1000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61L5n5Z5y3L._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/71MHTuVV89L._SX522_.jpg',
     rating: 4.4,
     reviews: 1892,
     features: [
@@ -157,7 +157,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Connects to your phone via Bluetooth. If you\'re in danger, shake your phone or press the tag to alert emergency contacts with your location. Includes fall detection.',
     price: '₹1,999',
     priceRange: '₹1000-₹2000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61Q7H9Z5x3L._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/41hEcfr1xzL._SL1080_.jpg',
     rating: 4.6,
     reviews: 567,
     features: [
@@ -186,7 +186,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Ultra-compact personal alarm that fits on any keychain. Simple pull-pin activation. Perfect for students and daily commute.',
     price: '₹349',
     priceRange: 'Under ₹500',
-    imageUrl: 'https://m.media-amazon.com/images/I/51kL5n5Z6L._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/416R66+2l-L._SY300_SX300_QL70_FMwebp_.jpg',
     rating: 4.3,
     reviews: 3456,
     features: [
@@ -214,7 +214,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Wearable pendant with one-touch SOS. Automatically calls emergency contacts and shares location. GPS enabled for outdoor tracking.',
     price: '₹2,999',
     priceRange: '₹2000-₹3000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61R8S9T0U1L._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/51K3DklSrKL._SY535_.jpg',
     rating: 4.7,
     reviews: 234,
     features: [
@@ -243,7 +243,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Complete travel safety set including personal alarm and door stopper alarm. Perfect for hotel stays and solo travel.',
     price: '₹1,299',
     priceRange: '₹1000-₹2000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61T9U0V1W2X._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/41TKva72J+L._SY300_SX300_QL70_FMwebp_.jpg',
     rating: 4.5,
     reviews: 789,
     features: [
@@ -272,7 +272,7 @@ export const armoryProducts: GadgetProduct[] = [
     description: 'Value pack of 2 keychain alarms',
     price: '₹899',
     priceRange: '₹500-₹1000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61U1V2W3X4Y._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/71MHTuVV89L._SX522_.jpg',
     rating: 4.4,
     reviews: 1234,
     features: ['2 alarms in pack', '120dB each', 'Keychain attachment', 'Batteries included'],
@@ -288,7 +288,7 @@ export const armoryProducts: GadgetProduct[] = [
     description: 'Glow-in-the-dark personal alarm',
     price: '₹799',
     priceRange: '₹500-₹1000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61V2W3X4Y5Z._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/31I9yPP27wL._SY300_SX300_QL70_FMwebp_.jpg',
     rating: 4.5,
     reviews: 567,
     features: ['Glow in dark', '130dB', 'Water resistant', 'Carabiner clip'],
@@ -307,7 +307,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Powerful pepper spray with UV marking dye that helps identify attackers. 10% OC concentration for maximum effectiveness. Comes with safety lock and practice spray.',
     price: '₹599',
     priceRange: '₹500-₹1000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61W3X4Y5Z6A._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/41exSmSzzxL._SY300_SX300_QL70_FMwebp_.jpg',
     rating: 4.3,
     reviews: 3456,
     features: [
@@ -335,7 +335,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Quick-release keychain design allows instant access. Contains pepper gel that reduces blowback risk. Stops attackers within seconds.',
     price: '₹799',
     priceRange: '₹500-₹1000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61X4Y5Z6A7B._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/31CW2DZUWfL._SY300_SX300_QL70_FMwebp_.jpg',
     rating: 4.5,
     reviews: 2109,
     features: [
@@ -366,7 +366,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Slim GPS tracker that fits in bags, wallets, or attaches to keys. Get real-time location on your phone. Set safe zones and get alerts.',
     price: '₹2,499',
     priceRange: '₹2000-₹3000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61Y5Z6A7B8C._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/61nj5UCJXTL._SX679_.jpg',
     rating: 4.4,
     reviews: 892,
     features: [
@@ -395,7 +395,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Attach to keys, wallet, or bag. Ring your phone from the tracker, or find your tracker from phone. Works up to 200 feet.',
     price: '₹1,999',
     priceRange: '₹1000-₹2000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61Z6A7B8C9D._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/31gmrmhiqmL._SY300_SX300_QL70_FMwebp_.jpg',
     rating: 4.5,
     reviews: 1567,
     features: [
@@ -427,7 +427,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Ultra-bright flashlight with strobe mode to disorient attackers. Aircraft-grade aluminum. USB-C rechargeable. Includes pocket clip.',
     price: '₹899',
     priceRange: '₹500-₹1000',
-    imageUrl: 'https://m.media-amazon.com/images/I/71A7B8C9D0E._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/31sWViTDyhL._SX300_SY300_QL70_FMwebp_.jpg',
     rating: 4.7,
     reviews: 4321,
     features: [
@@ -457,7 +457,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Tactical-grade flashlight with crenelated strike bezel for self-defense. 2000 lumens, multiple modes, and momentary-on tail switch.',
     price: '₹3,999',
     priceRange: '₹3000+',
-    imageUrl: 'https://m.media-amazon.com/images/I/71B8C9D0E1F._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/51pg1CIOU7L._SY300_SX300_QL70_FMwebp_.jpg',
     rating: 4.8,
     reviews: 567,
     features: [
@@ -489,7 +489,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Small but effective self-defense tool. Made of aircraft aluminum. Can be used for pressure point strikes and as a hand-strengthener.',
     price: '₹299',
     priceRange: 'Under ₹500',
-    imageUrl: 'https://m.media-amazon.com/images/I/61C9D0E1F2G._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/51ovl7D0GGL._SY300_SX300_QL70_FMwebp_.jpg',
     rating: 4.3,
     reviews: 2134,
     features: [
@@ -519,7 +519,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Perfect for travel. Wedge under door - if someone tries to enter, it triggers a 120dB alarm. No installation needed.',
     price: '₹699',
     priceRange: '₹500-₹1000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61D0E1F2G3H._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/31NCKiL9gfL._SY300_SX300_QL70_FMwebp_.jpg',
     rating: 4.6,
     reviews: 3456,
     features: [
@@ -549,7 +549,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Emergency escape tool. Spring-loaded tip breaks car windows instantly. Built-in seatbelt cutter. Essential for every vehicle.',
     price: '₹599',
     priceRange: '₹500-₹1000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61E1F2G3H4I._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/31IrRB7UwxL._SX300_SY300_QL70_FMwebp_.jpg',
     rating: 4.8,
     reviews: 5678,
     features: [
@@ -578,7 +578,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: '2-in-1 safety device. Pull pin for 130dB alarm. Push button for bright LED light. Magnetic back attaches to bags or belts.',
     price: '₹899',
     priceRange: '₹500-₹1000',
-    imageUrl: 'https://m.media-amazon.com/images/I/61F2G3H4I5J._SL1500_.jpg',
+    imageUrl: 'https://m.media-amazon.com/images/I/31WTpd9JRKL._SY300_SX300_QL70_FMwebp_.jpg',
     rating: 4.5,
     reviews: 1876,
     features: [
@@ -610,7 +610,7 @@ export const armoryProducts: GadgetProduct[] = [
     longDescription: 'Comprehensive safety app. Features include live location sharing, fake call, voice activation, and emergency alerts to contacts.',
     price: 'Free',
     priceRange: 'Free',
-    imageUrl: 'https://play-lh.googleusercontent.com/6G4H5I6J7K8L9M0N1O2P3Q4R5S6T7U8V9W0X1Y2Z',
+    imageUrl: 'https://play-lh.googleusercontent.com/dILVwcwp7iJMLXpXdQKbVMICBERkM0-1eFsOBIJOzzzQy0zwmeSDU3KbBBqpGbjgrA=w2560-h1440-rw',
     rating: 4.5,
     reviews: 50000,
     features: [
@@ -630,14 +630,14 @@ export const armoryProducts: GadgetProduct[] = [
   },
   {
     id: 'app-safetipin-1',
-    name: 'Safetipin - Safety Map App',
+    name: 'Personal Safety App',
     category: 'app',
     brand: 'Safetipin',
     description: 'Map-based safety app for India',
     longDescription: 'Popular in India. Shows safety scores for different areas based on lighting, visibility, and crowd. Report incidents and find safe routes.',
     price: 'Free',
     priceRange: 'Free',
-    imageUrl: 'https://play-lh.googleusercontent.com/7H5I6J7K8L9M0N1O2P3Q4R5S6T7U8V9W0X1Y2Z3A',
+    imageUrl: 'https://play-lh.googleusercontent.com/peIpXbcfTxr0sqH9pYa_f3a7DUjBT_8o0ABIcW7V_OfATkhfxiBWezu3h3G0z0hU2rw=w2560-h1440-rw',
     rating: 4.4,
     reviews: 100000,
     features: [

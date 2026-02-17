@@ -14,6 +14,7 @@ interface Comment {
   author: {
     name: string | null
     isAnonymous: boolean
+    id?: string 
   }
   createdAt: string
   upvotes: number
@@ -28,7 +29,6 @@ interface Story {
     name: string | null
     isAnonymous: boolean
     id?: string
-    safetyScore?: number
   }
   upvotes: number
   comments: number
@@ -38,60 +38,90 @@ interface Story {
   savedBy: number
 }
 
-interface StoryDetailProps {
-  story: Story
+interface StoryDetailClientProps {
+  storyId: string
 }
 
-// Local storage keys
 const STORIES_STORAGE_KEY = 'community-stories'
 const COMMENTS_STORAGE_KEY = 'story-comments'
 
-
-export function StoryDetail({ story }: StoryDetailProps) {
+export function StoryDetailClient({ storyId }: StoryDetailClientProps) {
   const router = useRouter()
   const { data: session } = useSession()
+  const [story, setStory] = useState<Story | null>(null)
+  const [loading, setLoading] = useState(true)
   const [isUpvoted, setIsUpvoted] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
-  const [upvoteCount, setUpvoteCount] = useState(story.upvotes)
+  const [upvoteCount, setUpvoteCount] = useState(0)
   const [commentText, setCommentText] = useState('')
   const [isSubmittingComment, setIsSubmittingComment] = useState(false)
   const [comments, setComments] = useState<Comment[]>([])
   const [hasUpvoted, setHasUpvoted] = useState(false)
-  const [isOwnStory, setIsOwnStory] = useState(false)
+
+  useEffect(() => {
+    // Load story from localStorage
+    const stories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
+    const foundStory = stories.find((s: Story) => s.id === storyId)
+    
+    if (foundStory) {
+      setStory(foundStory)
+      setUpvoteCount(foundStory.upvotes)
+      
+      // Load comments
+      const savedComments = localStorage.getItem(`${COMMENTS_STORAGE_KEY}-${storyId}`)
+      if (savedComments) {
+        setComments(JSON.parse(savedComments))
+      }
+
+      // Check if user has upvoted this story
+      const upvotedStories = JSON.parse(localStorage.getItem('upvoted-stories') || '[]')
+      setHasUpvoted(upvotedStories.includes(storyId))
+
+      // Check if story is saved
+      const savedStories = JSON.parse(localStorage.getItem('saved-stories') || '[]')
+      setIsSaved(savedStories.includes(storyId))
+
+      // Increment view count
+      const updatedStories = stories.map((s: Story) => 
+        s.id === storyId ? { ...s, views: (s.views || 0) + 1 } : s
+      )
+      localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(updatedStories))
+    }
+    
+    setLoading(false)
+  }, [storyId])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-neutral-light py-12">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="bg-white rounded-lg shadow-lg p-8 animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4 mb-8"></div>
+            <div className="h-32 bg-gray-200 rounded mb-4"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!story) {
+    return (
+      <div className="min-h-screen bg-neutral-light py-12">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <h1 className="text-3xl font-bold text-primary-deep mb-4">Story Not Found</h1>
+          <p className="text-gray-600 mb-8">The story you're looking for doesn't exist or has been deleted.</p>
+          <Link href="/watchtower/feed" className="btn-primary">
+            Back to Stories
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   const category = STORY_CATEGORIES.find(c => c.value === story.category)
   const Icon = category?.icon || Icons.AllStories
   const categoryColor = category?.color || '#6B4E71'
-
-  useEffect(() => {
-  // Check if current user owns this story
-  if (session?.user?.email === story.author.id) {
-    setIsOwnStory(true)
-  }
-}, [session, story.author.id])
-
-  useEffect(() => {
-    // Load comments from localStorage
-    const savedComments = localStorage.getItem(`${COMMENTS_STORAGE_KEY}-${story.id}`)
-    if (savedComments) {
-      setComments(JSON.parse(savedComments))
-    }
-
-    // Check if user has upvoted this story
-    const upvotedStories = JSON.parse(localStorage.getItem('upvoted-stories') || '[]')
-    setHasUpvoted(upvotedStories.includes(story.id))
-
-    // Check if story is saved
-    const savedStories = JSON.parse(localStorage.getItem('saved-stories') || '[]')
-    setIsSaved(savedStories.includes(story.id))
-
-    // Increment view count
-    const stories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
-    const updatedStories = stories.map((s: Story) => 
-      s.id === story.id ? { ...s, views: (s.views || 0) + 1 } : s
-    )
-    localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(updatedStories))
-  }, [story.id])
-
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -110,9 +140,7 @@ export function StoryDetail({ story }: StoryDetailProps) {
     return date.toLocaleDateString('en-US', { 
       month: 'long', 
       day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      year: 'numeric'
     })
   }
 
@@ -122,29 +150,26 @@ export function StoryDetail({ story }: StoryDetailProps) {
       return
     }
 
-    // Update localStorage
     const upvotedStories = JSON.parse(localStorage.getItem('upvoted-stories') || '[]')
     
     if (!hasUpvoted) {
-      // Add upvote
-      upvotedStories.push(story.id)
+      upvotedStories.push(storyId)
       setUpvoteCount(prev => prev + 1)
       setHasUpvoted(true)
       toast.success('Story upvoted!')
     } else {
-      // Remove upvote
-      const index = upvotedStories.indexOf(story.id)
+      const index = upvotedStories.indexOf(storyId)
       upvotedStories.splice(index, 1)
       setUpvoteCount(prev => prev - 1)
       setHasUpvoted(false)
+      toast.success('Upvote removed')
     }
     
     localStorage.setItem('upvoted-stories', JSON.stringify(upvotedStories))
 
-    // Update story in stories list
     const stories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
     const updatedStories = stories.map((s: Story) => 
-      s.id === story.id ? { ...s, upvotes: hasUpvoted ? s.upvotes - 1 : s.upvotes + 1 } : s
+      s.id === storyId ? { ...s, upvotes: hasUpvoted ? s.upvotes - 1 : s.upvotes + 1 } : s
     )
     localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(updatedStories))
   }
@@ -158,11 +183,11 @@ export function StoryDetail({ story }: StoryDetailProps) {
     const savedStories = JSON.parse(localStorage.getItem('saved-stories') || '[]')
     
     if (!isSaved) {
-      savedStories.push(story.id)
+      savedStories.push(storyId)
       setIsSaved(true)
       toast.success('Story saved!')
     } else {
-      const index = savedStories.indexOf(story.id)
+      const index = savedStories.indexOf(storyId)
       savedStories.splice(index, 1)
       setIsSaved(false)
       toast.success('Story removed from saved')
@@ -171,28 +196,10 @@ export function StoryDetail({ story }: StoryDetailProps) {
     localStorage.setItem('saved-stories', JSON.stringify(savedStories))
   }
 
-  const handleEdit = () => {
-  router.push(`/watchtower/story/${story.id}/edit`)
-}
-
-const handleDelete = () => {
-  if (confirm('Are you sure you want to delete this story?')) {
-    const stories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
-    const updatedStories = stories.filter((s: Story) => s.id !== story.id)
-    localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(updatedStories))
-    toast.success('Story deleted successfully')
-    router.push('/watchtower/feed')
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href)
+    toast.success('Link copied to clipboard!')
   }
-}
-
-const handleReport = () => {
-  toast.success('Thank you for reporting. Our team will review this story.')
-}
-
-const handleShare = () => {
-  navigator.clipboard.writeText(window.location.href)
-  toast.success('Link copied to clipboard!')
-}
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -204,29 +211,25 @@ const handleShare = () => {
 
     setIsSubmittingComment(true)
     
-    // Create new comment
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      content: commentText,
-      author: { 
-        name: session.user?.name || 'User', 
-        isAnonymous: false 
-      },
-      createdAt: new Date().toISOString(),
-      upvotes: 0
-    }
+const newComment: Comment = {
+  id: Date.now().toString(),
+  content: commentText,
+  author: { 
+    name: session.user?.name || 'User', 
+    isAnonymous: false,
+    id: session.user?.email || undefined 
+  },
+  createdAt: new Date().toISOString(),
+  upvotes: 0
+}
 
-    // Update comments
     const updatedComments = [newComment, ...comments]
     setComments(updatedComments)
-    
-    // Save to localStorage
-    localStorage.setItem(`${COMMENTS_STORAGE_KEY}-${story.id}`, JSON.stringify(updatedComments))
+    localStorage.setItem(`${COMMENTS_STORAGE_KEY}-${storyId}`, JSON.stringify(updatedComments))
 
-    // Update comment count in story
     const stories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
     const updatedStories = stories.map((s: Story) => 
-      s.id === story.id ? { ...s, comments: (s.comments || 0) + 1 } : s
+      s.id === storyId ? { ...s, comments: (s.comments || 0) + 1 } : s
     )
     localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(updatedStories))
 
@@ -240,10 +243,30 @@ const handleShare = () => {
       c.id === commentId ? { ...c, upvotes: c.upvotes + 1 } : c
     )
     setComments(updatedComments)
-    localStorage.setItem(`${COMMENTS_STORAGE_KEY}-${story.id}`, JSON.stringify(updatedComments))
+    localStorage.setItem(`${COMMENTS_STORAGE_KEY}-${storyId}`, JSON.stringify(updatedComments))
   }
 
-    return (
+  const handleEdit = () => {
+    router.push(`/watchtower/story/${storyId}/edit`)
+  }
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this story?')) {
+      const stories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
+      const updatedStories = stories.filter((s: Story) => s.id !== storyId)
+      localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(updatedStories))
+      toast.success('Story deleted successfully')
+      router.push('/watchtower/feed')
+    }
+  }
+
+  const handleReport = () => {
+    toast.success('Thank you for reporting. Our team will review this story.')
+  }
+
+  const isOwnStory = session?.user?.email === story.author.id
+
+  return (
     <div className="min-h-screen bg-neutral-light py-12">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-6">
@@ -372,7 +395,6 @@ const handleShare = () => {
           </div>
         </article>
 
-        {/* Comments Section */}
         <div className="mt-8 bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-2xl font-bold text-primary-deep mb-6">
             Comments ({comments.length})

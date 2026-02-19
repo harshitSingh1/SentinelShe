@@ -53,7 +53,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
         <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition">
           <div className="flex items-start gap-4">
             <div className="w-16 h-16 bg-primary-deep/5 rounded-lg overflow-hidden shrink-0">
-              <ProductImage src={product.imageUrl} alt={product.name} className="w-full h-full" />
+              <ProductImage src={product.imageUrl} alt={product.name} className="w-full h-48 object-contain p-4 bg-blue-500 rounded-lg" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-primary-deep mb-1 truncate">{product.name}</h3>
@@ -74,7 +74,7 @@ export function ProductCard({ product, compact = false }: ProductCardProps) {
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition relative">
       <Link href={`/armory/product/${product.id}`} className="block">
         <div className="relative h-48 bg-primary-deep/5">
-          <ProductImage src={product.imageUrl} alt={product.name} className="w-full h-full p-4" />
+          <ProductImage src={product.imageUrl} alt={product.name} className="w-full h-full object-contain p-4 bg-gray-100 rounded-lg" />
           <button
             onClick={saveProduct}
             className={`absolute top-2 right-2 text-2xl ${

@@ -36,16 +36,46 @@ const getCategoryContent = (slug: string) => {
         { id: 7, title: 'Self-Defense Laws by State', date: '2024-01-14' },
         { id: 8, title: 'Filing a Police Report Guide', date: '2024-01-09' },
       ]
+    },
+    'success-stories': {
+      title: 'Success Stories',
+      description: 'Real stories of courage, resilience, and empowerment from our community.',
+      articles: [
+        { id: 9, title: 'From Survivor to Advocate: Meera’s Journey', date: '2024-01-15' },
+        { id: 10, title: 'How Community Support Changed Aarti’s Life', date: '2024-01-10' },
+        { id: 11, title: 'Breaking Barriers: A Story of Strength', date: '2024-01-05' },
+      ]
+    },
+
+    'expert-interviews': {
+      title: 'Expert Interviews',
+      description: 'Insights and advice from legal, safety, and self-defense experts.',
+      articles: [
+        { id: 12, title: 'Interview with a Criminal Defense Lawyer on Women’s Rights', date: '2024-01-18' },
+        { id: 13, title: 'Self-Defense Trainer Shares Practical Safety Tips', date: '2024-01-12' },
+        { id: 14, title: 'Cybersecurity Expert on Protecting Women Online', date: '2024-01-07' },
+      ]
+    },
+
+    'research': {
+      title: 'Research & Reports',
+      description: 'Data-driven insights and studies on women’s safety and empowerment.',
+      articles: [
+        { id: 15, title: 'Annual Women’s Safety Report 2024', date: '2024-01-20' },
+        { id: 16, title: 'Study on Urban Safety Challenges for Women', date: '2024-01-14' },
+        { id: 17, title: 'Digital Harassment Trends and Prevention Strategies', date: '2024-01-09' },
+      ]
     }
+
   }
-  
+
   return categories[slug as keyof typeof categories]
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const category = getCategoryContent(slug)
-  
+
   if (!category) {
     return {
       title: 'Category Not Found',
@@ -69,7 +99,7 @@ export default async function CategoryPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-neutral-light py-12">
       <div className="container mx-auto px-4">
-        <Link 
+        <Link
           href="/resources"
           className="inline-flex items-center text-accent-gold hover:underline mb-8"
         >
@@ -90,10 +120,10 @@ export default async function CategoryPage({ params }: PageProps) {
                 {article.title}
               </h2>
               <p className="text-sm text-gray-500">
-                {new Date(article.date).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {new Date(article.date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
                 })}
               </p>
             </Link>

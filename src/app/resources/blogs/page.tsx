@@ -74,7 +74,7 @@ export default function womenDefenceTechniques() {
         </Link>
 
         <h1 className="text-3xl md:text-4xl font-bold text-primary-deep mb-8">
-          Safety Tips
+          Blogs
         </h1>
 
         <div className="space-y-6">

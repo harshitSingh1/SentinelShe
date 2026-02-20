@@ -9,18 +9,15 @@ import toast from 'react-hot-toast'
 import { STORY_CATEGORIES } from '@/lib/constants'
 import { useSession } from 'next-auth/react'
 
-// Make isAnonymous required in the schema
 const storySchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(100, 'Title too long'),
-  content: z.string().min(50, 'Please share more details (minimum 50 characters)').max(5000, 'Story too long'),
+  content: z.string().min(50, 'Please share more details').max(5000, 'Story too long'),
   category: z.enum(['PERSONAL_EXPERIENCE', 'SAFETY_TIP', 'AWARENESS', 'SUCCESS_STORY', 'QUESTION']),
   isAnonymous: z.boolean(),
   tags: z.string().optional(),
 })
 
 type StoryFormData = z.infer<typeof storySchema>
-
-const STORIES_STORAGE_KEY = 'community-stories'
 
 export function StoryForm() {
   const router = useRouter()
@@ -77,32 +74,25 @@ export function StoryForm() {
     setIsLoading(true)
 
     try {
-      const newStory = {
-        id: Date.now().toString(),
-        title: data.title,
-        content: data.content,
-        category: data.category,
-        author: {
-          name: data.isAnonymous ? null : session.user?.name || 'User',
-          isAnonymous: data.isAnonymous,
-          id: session.user?.email,
-        },
-        upvotes: 0,
-        comments: 0,
-        createdAt: new Date().toISOString(),
-        tags: tags,
-        views: 0,
-        savedBy: 0,
+      const response = await fetch('/api/stories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...data,
+          tags: tags,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to share story')
       }
 
-      const existingStories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
-      const updatedStories = [newStory, ...existingStories]
-      localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(updatedStories))
-
-      toast.success('Story shared successfully!')
+      toast.success('Story shared successfully! It will appear after review.')
       router.push('/watchtower/feed')
     } catch (error) {
-      toast.error('Failed to share story')
+      toast.error(error instanceof Error ? error.message : 'Failed to share story')
     } finally {
       setIsLoading(false)
     }

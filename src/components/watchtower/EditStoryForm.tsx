@@ -8,7 +8,6 @@ import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { STORY_CATEGORIES } from '@/lib/constants'
 import { useSession } from 'next-auth/react'
-import Link from 'next/link'
 
 const storySchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(100, 'Title too long'),
@@ -19,8 +18,6 @@ const storySchema = z.object({
 })
 
 type StoryFormData = z.infer<typeof storySchema>
-
-const STORIES_STORAGE_KEY = 'community-stories'
 
 interface EditStoryFormProps {
   storyId: string
@@ -52,26 +49,32 @@ export function EditStoryForm({ storyId }: EditStoryFormProps) {
   })
 
   useEffect(() => {
-    // Load story from localStorage
-    const stories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
-    const foundStory = stories.find((s: any) => s.id === storyId)
-    
-    if (foundStory) {
-      setStory(foundStory)
-      setTags(foundStory.tags || [])
-      
-      // Set form values
-      setValue('title', foundStory.title)
-      setValue('content', foundStory.content)
-      setValue('category', foundStory.category)
-      setValue('isAnonymous', foundStory.author.isAnonymous)
-      setValue('tags', foundStory.tags?.join(',') || '')
-    }
-    
-    setIsLoading(false)
-  }, [storyId, setValue])
+    fetchStory()
+  }, [storyId])
 
-  const isAnonymous = watch('isAnonymous')
+  const fetchStory = async () => {
+    try {
+      const response = await fetch(`/api/stories/${storyId}`)
+      const data = await response.json()
+      
+      if (data.story) {
+        setStory(data.story)
+        setTags(data.story.tags || [])
+        
+        // Set form values
+        setValue('title', data.story.title)
+        setValue('content', data.story.content)
+        setValue('category', data.story.category)
+        setValue('isAnonymous', data.story.author?.isAnonymous || false)
+        setValue('tags', data.story.tags?.join(',') || '')
+      }
+    } catch (error) {
+      console.error('Error fetching story:', error)
+      toast.error('Failed to load story')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
@@ -100,41 +103,28 @@ export function EditStoryForm({ storyId }: EditStoryFormProps) {
       return
     }
 
-    if (!story) {
-      toast.error('Story not found')
-      return
-    }
-
-    if (session.user?.email !== story.author.id) {
-      toast.error('You can only edit your own stories')
-      return
-    }
-
     setIsSubmitting(true)
 
     try {
-      const updatedStory = {
-        ...story,
-        title: data.title,
-        content: data.content,
-        category: data.category,
-        author: {
-          ...story.author,
-          isAnonymous: data.isAnonymous,
-        },
-        tags: tags,
-      }
+      const response = await fetch(`/api/stories/${storyId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...data,
+          tags: tags,
+        }),
+      })
 
-      const stories = JSON.parse(localStorage.getItem(STORIES_STORAGE_KEY) || '[]')
-      const updatedStories = stories.map((s: any) => 
-        s.id === storyId ? updatedStory : s
-      )
-      localStorage.setItem(STORIES_STORAGE_KEY, JSON.stringify(updatedStories))
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to update story')
+      }
 
       toast.success('Story updated successfully!')
       router.push(`/watchtower/story/${storyId}`)
     } catch (error) {
-      toast.error('Failed to update story')
+      toast.error(error instanceof Error ? error.message : 'Failed to update story')
     } finally {
       setIsSubmitting(false)
     }
@@ -160,9 +150,12 @@ export function EditStoryForm({ storyId }: EditStoryFormProps) {
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <h1 className="text-3xl font-bold text-primary-deep mb-4">Story Not Found</h1>
           <p className="text-gray-600 mb-8">The story you're trying to edit doesn't exist or has been deleted.</p>
-          <Link href="/watchtower/feed" className="btn-primary">
+          <button
+            onClick={() => router.push('/watchtower/feed')}
+            className="btn-primary"
+          >
             Back to Stories
-          </Link>
+          </button>
         </div>
       </div>
     )

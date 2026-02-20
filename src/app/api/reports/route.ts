@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     const radius = parseInt(searchParams.get('radius') || '10')
     const showAll = searchParams.get('all') === 'true'
 
-    console.log('Fetching reports...') // Debug log
+    console.log('🌐 Fetching reports from Supabase...')
 
     // Build filter
     let where: any = {}
@@ -50,8 +50,6 @@ export async function GET(request: Request) {
       where.status = 'VERIFIED'
     }
 
-    console.log('Query where clause:', where) // Debug log
-
     // Get reports from database
     const reports = await prisma.report.findMany({
       where,
@@ -74,7 +72,7 @@ export async function GET(request: Request) {
       take: limit,
     })
 
-    console.log(`Found ${reports.length} reports`) // Debug log
+    console.log(`✅ Found ${reports.length} reports`)
 
     // Filter by location if coordinates provided
     let filteredReports = reports
@@ -97,7 +95,7 @@ export async function GET(request: Request) {
       total: filteredReports.length,
     })
   } catch (error) {
-    console.error('Error fetching reports:', error)
+    console.error('❌ Error fetching reports:', error)
     return NextResponse.json(
       { error: 'Failed to fetch reports', reports: [] },
       { status: 500 }
@@ -117,7 +115,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    console.log('Received report data:', body) // Debug log
+    console.log('📝 Creating report:', body.title)
 
     // Validate input
     const validatedData = reportSchema.parse(body)
@@ -133,8 +131,6 @@ export async function POST(request: Request) {
         { status: 404 }
       )
     }
-
-    console.log('Creating report for user:', user.id) // Debug log
 
     // Create report
     const report = await prisma.report.create({
@@ -161,9 +157,9 @@ export async function POST(request: Request) {
       },
     })
 
-    console.log('Report created successfully:', report.id) // Debug log
+    console.log(`✅ Report created with ID: ${report.id}`)
 
-    // Increase user's safety score for reporting
+    // Increase user's safety score
     await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -176,13 +172,13 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Report submitted successfully and is pending review',
+        message: 'Report submitted successfully',
         report,
       },
       { status: 201 }
     )
   } catch (error) {
-    console.error('Error creating report:', error)
+    console.error('❌ Error creating report:', error)
 
     if (error instanceof z.ZodError) {
       const zodError: any = error
@@ -200,9 +196,9 @@ export async function POST(request: Request) {
   }
 }
 
-// Helper function to calculate distance between two coordinates (in km)
+// Helper functions remain the same...
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const R = 6371 // Earth's radius in km
+  const R = 6371
   const dLat = toRad(lat2 - lat1)
   const dLon = toRad(lon2 - lon1)
   const a =

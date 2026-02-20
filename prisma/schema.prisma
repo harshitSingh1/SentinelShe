@@ -35,6 +35,8 @@ model User {
   gadgetReviews  GadgetReview[]
   reportFlags    ReportFlag[]
   storyFlags     StoryFlag[]
+  @@index([email])
+  @@index([safetyScore])
 }
 
 model DeviceToken {
@@ -83,6 +85,10 @@ model Report {
   user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]
   flags    ReportFlag[]
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+  @@index([userId])
 }
 
 model Story {
@@ -105,6 +111,24 @@ model Story {
   comments Comment[]
   savedBy  SavedStory[]
   flags    StoryFlag[]
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model StoryVote {
+  id        String   @id @default(cuid())
+  storyId   String
+  userId    String
+  voteType  Int      // 1 for upvote, -1 for downvote, 0 for neutral
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, userId])
 }
 
 model SavedStory {
@@ -437,3 +461,4 @@ enum TipCategory {
   HOME
   WORK
 }
+

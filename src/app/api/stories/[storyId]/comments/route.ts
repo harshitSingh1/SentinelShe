@@ -10,7 +10,7 @@ interface RouteProps {
 }
 
 const commentSchema = z.object({
-  content: z.string().min(2).max(500),
+  content: z.string().min(1).max(500),
 })
 
 export async function POST(
@@ -69,15 +69,29 @@ export async function POST(
           select: {
             name: true,
             isAnonymous: true,
+            email: true,
           },
         },
       },
     })
 
+    // Transform comment
+    const transformedComment = {
+      id: comment.id,
+      content: comment.content,
+      author: {
+        name: comment.user?.name || null,
+        isAnonymous: comment.user?.isAnonymous || false,
+        id: comment.user?.email || comment.userId,
+      },
+      createdAt: comment.createdAt,
+      upvotes: 0,
+    }
+
     return NextResponse.json(
       { 
         success: true, 
-        comment,
+        comment: transformedComment,
       },
       { status: 201 }
     )
@@ -85,7 +99,6 @@ export async function POST(
     console.error('Error creating comment:', error)
     
     if (error instanceof z.ZodError) {
-      // Fix the TypeScript error by using any type assertion
       const zodError: any = error
       const errorMessage = zodError.errors?.[0]?.message || 'Validation error'
       return NextResponse.json(
@@ -115,6 +128,7 @@ export async function GET(
           select: {
             name: true,
             isAnonymous: true,
+            email: true,
           },
         },
       },
@@ -123,11 +137,24 @@ export async function GET(
       },
     })
 
-    return NextResponse.json({ comments })
+    // Transform comments
+    const transformedComments = comments.map(comment => ({
+      id: comment.id,
+      content: comment.content,
+      author: {
+        name: comment.user?.name || null,
+        isAnonymous: comment.user?.isAnonymous || false,
+        id: comment.user?.email || comment.userId,
+      },
+      createdAt: comment.createdAt,
+      upvotes: 0,
+    }))
+
+    return NextResponse.json({ comments: transformedComments })
   } catch (error) {
     console.error('Error fetching comments:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch comments' },
+      { error: 'Failed to fetch comments', comments: [] },
       { status: 500 }
     )
   }

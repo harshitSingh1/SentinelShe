@@ -72,17 +72,17 @@ export default function WatchtowerPage() {
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           <Link
-            href="/watchtower/reports"
-            className="bg-white rounded-lg shadow-md p-8 text-center hover:shadow-lg transition group"
-          >
-            <div className="text-5xl mb-4">📢</div>
-            <h2 className="text-2xl font-bold mb-2 group-hover:text-accent-gold transition">
-              Report an Incident
-            </h2>
-            <p className="text-gray-600">
-              Share suspicious activities or unsafe conditions to alert your community
-            </p>
-          </Link>
+  href="/watchtower/reports"
+  className="bg-white rounded-lg shadow-md p-8 text-center hover:shadow-lg transition group"
+>
+  <div className="text-5xl mb-4">📢</div>
+  <h2 className="text-2xl font-bold mb-2 group-hover:text-accent-gold transition">
+    Report an Incident
+  </h2>
+  <p className="text-gray-600">
+    Share suspicious activities or unsafe conditions to alert your community
+  </p>
+</Link>
 
           <Link
             href="/watchtower/feed"

@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { REPORT_CATEGORIES } from '@/lib/constants'
 import { Icons } from '@/components/icons/SafetyIcons'
 import toast from 'react-hot-toast'
-import Link from 'next/link'
 
 interface Report {
   id: string
@@ -18,34 +19,35 @@ interface Report {
   createdAt: string
   isAnonymous: boolean
   isVerified: boolean
+  status: string
   upvotes: number
-  downvotes: number
   user: {
     name: string | null
     isAnonymous: boolean
+  }
+  _count?: {
+    flags: number
   }
 }
 
 interface VoteState {
   upvoted: Set<string>
-  downvoted: Set<string>
 }
 
-const REPORTS_STORAGE_KEY = 'community-reports'
-
 export function ReportsList() {
+  const { data: session } = useSession()
   const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('')
-  const [votes, setVotes] = useState<VoteState>({ upvoted: new Set(), downvoted: new Set() })
+  const [votes, setVotes] = useState<VoteState>({ upvoted: new Set() })
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
   const [locationRadius, setLocationRadius] = useState<number>(10)
   const [useLocationFilter, setUseLocationFilter] = useState(false)
 
   useEffect(() => {
-    loadReports()
+    fetchReports()
     loadVotes()
-    
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -61,43 +63,29 @@ export function ReportsList() {
     }
   }, [])
 
-  const loadReports = async () => {
+  const fetchReports = async () => {
     try {
-      // Try to load from API first
-      const response = await fetch('/api/reports')
+      // Fetch all reports (including user's pending ones)
+      const response = await fetch('/api/reports?all=true')
       const data = await response.json()
-      
-      if (data.success && data.reports.length > 0) {
+      if (data.success) {
         setReports(data.reports)
-        // Backup to localStorage
-        localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(data.reports))
-      } else {
-        // Fallback to localStorage
-        const saved = localStorage.getItem(REPORTS_STORAGE_KEY)
-        if (saved) {
-          setReports(JSON.parse(saved))
-        }
       }
     } catch (error) {
       console.error('Error fetching reports:', error)
-      // Fallback to localStorage
-      const saved = localStorage.getItem(REPORTS_STORAGE_KEY)
-      if (saved) {
-        setReports(JSON.parse(saved))
-      }
+      toast.error('Failed to load reports')
     } finally {
       setLoading(false)
     }
   }
 
   const loadVotes = () => {
-    const saved = localStorage.getItem('report-votes')
+    const saved = localStorage.getItem('report-upvotes')
     if (saved) {
       try {
         const parsed = JSON.parse(saved)
         setVotes({
-          upvoted: new Set(parsed.upvoted || []),
-          downvoted: new Set(parsed.downvoted || [])
+          upvoted: new Set(parsed.upvoted || [])
         })
       } catch (e) {
         console.error('Error loading votes')
@@ -106,73 +94,63 @@ export function ReportsList() {
   }
 
   const saveVotes = (newVotes: VoteState) => {
-    localStorage.setItem('report-votes', JSON.stringify({
-      upvoted: Array.from(newVotes.upvoted),
-      downvoted: Array.from(newVotes.downvoted)
+    localStorage.setItem('report-upvotes', JSON.stringify({
+      upvoted: Array.from(newVotes.upvoted)
     }))
   }
 
-  const handleVote = (reportId: string, voteType: 'up' | 'down') => {
-    const newVotes = { ...votes }
-    let voteChange = { up: 0, down: 0 }
+  const handleUpvote = async (reportId: string) => {
+    if (!session) {
+      toast.error('Please login to upvote')
+      return
+    }
 
-    if (voteType === 'up') {
-      if (votes.upvoted.has(reportId)) {
-        newVotes.upvoted.delete(reportId)
-        voteChange.up = -1
-      } else {
-        newVotes.upvoted.add(reportId)
-        voteChange.up = 1
-        if (votes.downvoted.has(reportId)) {
-          newVotes.downvoted.delete(reportId)
-          voteChange.down = -1
-        }
-      }
+    const newVotes = { ...votes }
+    let voteChange = 0
+
+    if (votes.upvoted.has(reportId)) {
+      newVotes.upvoted.delete(reportId)
+      voteChange = -1
     } else {
-      if (votes.downvoted.has(reportId)) {
-        newVotes.downvoted.delete(reportId)
-        voteChange.down = -1
-      } else {
-        newVotes.downvoted.add(reportId)
-        voteChange.down = 1
-        if (votes.upvoted.has(reportId)) {
-          newVotes.upvoted.delete(reportId)
-          voteChange.up = -1
-        }
-      }
+      newVotes.upvoted.add(reportId)
+      voteChange = 1
     }
 
     setVotes(newVotes)
     saveVotes(newVotes)
 
-    setReports(prev => prev.map(r => 
-      r.id === reportId ? {
-        ...r,
-        upvotes: r.upvotes + voteChange.up,
-        downvotes: r.downvotes + voteChange.down
-      } : r
+    // Update UI immediately
+    setReports(prev => prev.map(r =>
+      r.id === reportId ? { ...r, upvotes: r.upvotes + voteChange } : r
     ))
 
-    // Update localStorage
-    const updatedReports = reports.map(r => 
-      r.id === reportId ? {
-        ...r,
-        upvotes: r.upvotes + voteChange.up,
-        downvotes: r.downvotes + voteChange.down
-      } : r
-    )
-    localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updatedReports))
+    // Send to backend
+    try {
+      await fetch(`/api/reports/${reportId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'upvote' }),
+      })
+    } catch (error) {
+      console.error('Error updating vote:', error)
+      // Revert on error
+      setVotes(votes)
+      setReports(prev => prev.map(r =>
+        r.id === reportId ? { ...r, upvotes: r.upvotes - voteChange } : r
+      ))
+      toast.error('Failed to update vote')
+    }
   }
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371
     const dLat = (lat2 - lat1) * Math.PI / 180
     const dLon = (lon2 - lon1) * Math.PI / 180
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
     return R * c
   }
 
@@ -214,9 +192,12 @@ export function ReportsList() {
     })
   }
 
-  filteredReports.sort((a, b) => 
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  )
+  // Sort by date (newest first) and upvotes
+  filteredReports.sort((a, b) => {
+    const dateCompare = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    if (dateCompare !== 0) return dateCompare
+    return b.upvotes - a.upvotes
+  })
 
   if (loading) {
     return (
@@ -283,7 +264,7 @@ export function ReportsList() {
                 <span className="text-sm text-gray-600">Filter by location</span>
               </label>
             </div>
-            
+
             {useLocationFilter && (
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gray-600">Within:</span>
@@ -310,9 +291,8 @@ export function ReportsList() {
             const category = getCategoryDetails(report.category)
             const Icon = category.icon
             const isUpvoted = votes.upvoted.has(report.id)
-            const isDownvoted = votes.downvoted.has(report.id)
-            const score = report.upvotes - report.downvotes
-            
+            const isOwner = session?.user?.email === report.user?.name // This needs to be fixed with proper user ID
+
             return (
               <div key={report.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
                 <div className="flex items-start justify-between mb-3">
@@ -323,7 +303,12 @@ export function ReportsList() {
                     <span className="text-sm font-medium" style={{ color: category.color }}>
                       {category.label}
                     </span>
-                    {report.isVerified && (
+                    {report.status === 'PENDING' && (
+                      <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">
+                        Pending Review
+                      </span>
+                    )}
+                    {report.isVerified && report.status === 'VERIFIED' && (
                       <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1">
                         <span>✓</span> Verified
                       </span>
@@ -364,7 +349,7 @@ export function ReportsList() {
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleVote(report.id, 'up')}
+                      onClick={() => handleUpvote(report.id)}
                       className={`flex items-center gap-1 px-3 py-1 rounded-lg transition ${
                         isUpvoted
                           ? 'bg-green-100 text-green-700'
@@ -375,23 +360,6 @@ export function ReportsList() {
                       <Icons.Upvote className={`w-4 h-4 ${isUpvoted ? 'text-green-700' : ''}`} />
                       <span className="text-sm font-medium">{report.upvotes}</span>
                     </button>
-                    
-                    <span className="text-sm font-medium text-gray-400 min-w-10 text-center">
-                      {score > 0 ? `+${score}` : score}
-                    </span>
-                    
-                    <button
-                      onClick={() => handleVote(report.id, 'down')}
-                      className={`flex items-center gap-1 px-3 py-1 rounded-lg transition ${
-                        isDownvoted
-                          ? 'bg-red-100 text-red-700'
-                          : 'text-gray-500 hover:bg-gray-100'
-                      }`}
-                      title="Not helpful"
-                    >
-                      <Icons.Downvote className={`w-4 h-4 ${isDownvoted ? 'text-red-700' : ''}`} />
-                      <span className="text-sm font-medium">{report.downvotes}</span>
-                    </button>
                   </div>
                 </div>
               </div>
@@ -400,7 +368,7 @@ export function ReportsList() {
         ) : (
           <div className="text-center py-12 bg-white rounded-lg">
             <p className="text-gray-500 mb-4">No reports found.</p>
-            <Link 
+            <Link
               href="/watchtower/report"
               className="text-accent-gold hover:underline font-medium"
             >

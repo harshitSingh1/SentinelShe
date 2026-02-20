@@ -8,6 +8,7 @@ import { z } from 'zod'
 import toast from 'react-hot-toast'
 import { REPORT_CATEGORIES } from '@/lib/constants'
 
+// Make isAnonymous required in the schema
 const reportSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters').max(100, 'Title too long'),
   description: z.string().min(20, 'Please provide more details').max(2000, 'Description too long'),
@@ -30,6 +31,7 @@ export function ReportForm() {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ReportFormData>({
     resolver: zodResolver(reportSchema),
@@ -42,6 +44,8 @@ export function ReportForm() {
       isAnonymous: true,
     },
   })
+
+  const isAnonymous = watch('isAnonymous')
 
   const getCurrentLocation = () => {
     setLocationError(null)
@@ -80,7 +84,8 @@ export function ReportForm() {
       }
 
       toast.success('Report submitted successfully! Thank you for keeping the community safe.')
-      router.push('/watchtower')
+      router.push('/watchtower/reports')
+      router.refresh()
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to submit report')
     } finally {
@@ -208,6 +213,11 @@ export function ReportForm() {
           Report anonymously
         </label>
       </div>
+      <p className="text-xs text-gray-500 mt-1">
+        {isAnonymous 
+          ? 'Your report will be posted anonymously' 
+          : 'Your name will be visible with this report'}
+      </p>
 
       {/* Submit Button */}
       <button

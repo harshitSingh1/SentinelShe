@@ -79,7 +79,7 @@ export default function PressPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium">Phone</p>
-                  <p className="text-sm text-gray-600">+1 (800) 123-4567</p>
+                  <p className="text-sm text-gray-600">+91 9910583732</p>
                 </div>
               </div>
 

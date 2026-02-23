@@ -47,7 +47,7 @@ const getCategoryContent = (slug: string) => {
       ]
     },
 
-    'expert-interviews': {
+    'interviews': {
       title: 'Expert Interviews',
       description: 'Insights and advice from legal, safety, and self-defense experts.',
       articles: [

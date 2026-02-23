@@ -27,22 +27,22 @@ export default function ContactPage() {
               
               <div>
                 <h3 className="font-semibold text-accent-gold mb-1">Phone</h3>
-                <p className="text-gray-600">+1 (800) 123-4567</p>
+                <p className="text-gray-600">+91 9910583732\\</p>
               </div>
               
               <div>
                 <h3 className="font-semibold text-accent-gold mb-1">Address</h3>
                 <p className="text-gray-600">
-                  123 Safety Street<br />
-                  Suite 100<br />
-                  New York, NY 10001
+                  Block 8, Tower 45<br />
+                  PC Chowk<br />
+                  Agra, India
                 </p>
               </div>
 
               <div>
                 <h3 className="font-semibold text-accent-gold mb-1">Hours</h3>
                 <p className="text-gray-600">
-                  Monday - Friday: 9am - 6pm EST<br />
+                  Monday - Friday: 9am - 6pm IST<br />
                   Weekend: Closed
                 </p>
               </div>

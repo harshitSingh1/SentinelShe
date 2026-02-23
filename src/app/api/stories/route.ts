@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { prisma } from '@/lib/db/client'
 import { z } from 'zod'
+import { withRetry } from '@/lib/db/connect'
+import { wakeDatabase } from '@/lib/db/wake'
+
 
 const storySchema = z.object({
   title: z.string().min(5).max(100),
@@ -101,6 +104,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  await wakeDatabase()
   try {
     const session = await getServerSession()
     
@@ -118,9 +122,11 @@ export async function POST(request: Request) {
     const validatedData = storySchema.parse(body)
 
     // Find user
-    const user = await prisma.user.findUnique({
-      where: { email: session.user?.email! },
-    })
+    const user = await withRetry(() => 
+  prisma.user.findUnique({
+    where: { email: session.user?.email! },
+  })
+)
 
     if (!user) {
       return NextResponse.json(

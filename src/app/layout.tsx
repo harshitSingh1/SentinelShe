@@ -7,22 +7,24 @@ import { Footer } from '@/components/layout/Footer'
 import { CookieConsent } from '@/components/cookies/CookieConsent'
 import { Toaster } from 'react-hot-toast'
 import { APP_NAME, APP_DESCRIPTION } from '@/lib/constants'
-import { UserSync } from '@/components/auth/UserSync'
 
 const inter = Inter({ 
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
 })
 
 const poppins = Poppins({
   weight: ['400', '500', '600', '700'],
   subsets: ['latin'],
   variable: '--font-poppins',
+  display: 'swap',
 })
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-playfair',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -31,6 +33,32 @@ export const metadata: Metadata = {
     template: `%s | ${APP_NAME}`,
   },
   description: APP_DESCRIPTION,
+  keywords: ['women safety', 'self defense', 'community safety', 'safety awareness', 'women empowerment'],
+  authors: [{ name: 'SentinelShe' }],
+  creator: 'SentinelShe',
+  publisher: 'SentinelShe',
+  openGraph: {
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+    url: 'https://sentinelshe.com',
+    siteName: APP_NAME,
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: APP_NAME,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+    images: ['/images/twitter-image.jpg'],
+  },
 }
 
 export default function RootLayout({
@@ -39,13 +67,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth">
+    <html lang="en" className="scroll-smooth">
       <body 
-        className={`${inter.variable} ${poppins.variable} ${playfair.variable} font-sans antialiased`}
+        className={`${inter.variable} ${poppins.variable} ${playfair.variable} antialiased`}
         suppressHydrationWarning={true}
       >
         <Providers>
-          <UserSync />
           <div className="flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">{children}</main>
@@ -53,12 +80,20 @@ export default function RootLayout({
           </div>
           <CookieConsent />
           <Toaster 
-            position="top-right"
+            position="top-center"
             toastOptions={{
               duration: 4000,
               style: {
-                background: '#363636',
+                background: '#1A0B2E',
                 color: '#fff',
+                borderRadius: '12px',
+                padding: '16px',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#E5B13A',
+                  secondary: '#fff',
+                },
               },
             }}
           />
